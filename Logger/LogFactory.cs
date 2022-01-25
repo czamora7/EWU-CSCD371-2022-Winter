@@ -5,22 +5,29 @@ namespace Logger
     public class LogFactory
     {
 
-        public string _classname;
-
-        public string Classname
-        {
-            get => _classname;
-            
-            set
-            {
-                if (value is null) throw new ArgumentNullException(nameof(value));
-                _classname = value;
-            }
-        }
+        private string _ClassName;
+        private string _PathName;
 
         public BaseLogger CreateLogger(string className)
         {
+            FileLogger fl = new FileLogger();
+
+            //write configure file logger method
+
+            return fl;
+        }
+
+        //The LogFactory should be updated with a new method ConfigureFileLogger.
+        //This should take in a file path and store it in a private member. It
+        //should use this when instantiating a new FileLogger in its CreateLogger
+        //method.
+        
+        public FileLogger ConfigureFileLogger(string pathname)
+        {
+
             return null;
         }
+
+
     }
 }
