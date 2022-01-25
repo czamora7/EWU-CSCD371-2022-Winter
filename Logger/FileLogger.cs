@@ -26,8 +26,7 @@ namespace Logger
             fs.WriteLine(message);
             
             //output the date, time, class name, log level, and message
-            Console.WriteLine(DateTime.Now + " " + ClassName + " " + 
-                logLevel + ": " + message);
+            Console.WriteLine($"{DateTime.Now} {ClassName} {nameof(logLevel)}:  {message}");
 
         }
     }

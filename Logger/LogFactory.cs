@@ -1,31 +1,28 @@
 ﻿using System;
+using System.IO;
 
 namespace Logger
 {
     public class LogFactory
     {
-
-        private string _ClassName;
-        private string _PathName;
-
+        private String _pathname;
         public BaseLogger CreateLogger(string className)
         {
             FileLogger fl = new FileLogger();
 
-            //write configure file logger method
+            fl.ClassName = className;
+
+            Console.WriteLine("Please enter a valid file path: ");
+            String pathName = Console.ReadLine();
+
+            ConfigureFileLogger(pathName);
 
             return fl;
         }
-
-        //The LogFactory should be updated with a new method ConfigureFileLogger.
-        //This should take in a file path and store it in a private member. It
-        //should use this when instantiating a new FileLogger in its CreateLogger
-        //method.
         
-        public FileLogger ConfigureFileLogger(string pathname)
+        public void ConfigureFileLogger(string pathname)
         {
-
-            return null;
+            _pathname = pathname;
         }
 
 
