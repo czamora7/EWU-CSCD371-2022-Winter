@@ -20,7 +20,6 @@ namespace Logger
 
         public BaseLogger CreateLogger(string className)
         {
-            
             return null;
         }
     }
