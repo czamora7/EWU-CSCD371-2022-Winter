@@ -1,21 +1,18 @@
-﻿using System;
-
+﻿using static Logger.BaseLoggerMixins;
 namespace Logger
 {
     public abstract class BaseLogger
     {
-        private string _ClassName;
-
-        public string ClassName
+        public abstract void Log(string className, LogLevel logLevel, string message, string path); 
+    }
+ 
+    public class Baselogger {
+        public void Log(BaseLogger logger, string message, LogLevel logLevel) 
         {
-            get => _ClassName;
-
-            set
-            {
-                if (value is null) throw new ArgumentNullException(nameof(value));
-                _ClassName = value;
-            }
+            logger.Error(message, "");
+            logger.Warning(message, "");
+            logger.Information(message, logLevel);
+            logger.Debug(message, logLevel);
         }
-        public abstract void Log(LogLevel logLevel, string message);
     }
 }

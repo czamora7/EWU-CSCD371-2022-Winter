@@ -1,30 +1,34 @@
-﻿using System;
-using System.IO;
+﻿
+using System;
 
 namespace Logger
 {
     public class LogFactory
     {
-        private String _pathname;
-        public BaseLogger CreateLogger(string className)
+        readonly LogFactory log = new();
+        public string status = "success";
+        public object? ClassName { get; set;}
+        public string? CreateLogger(string className, LogLevel LogLevel, string message,FileLogger fileLogger)
         {
-            FileLogger fl = new FileLogger();
+            Console.WriteLine("Enter File Path you want to write to: ");
+            string path = Console.ReadLine();
+            fileLogger.Log(className, LogLevel, message, path);
+            string x = "success";
+            try
+            {
+                log.ConfigureFileLogger(path);
+            }
+            catch (Exception) { return null; }
 
-            fl.ClassName = className;
-
-            Console.WriteLine("Please enter a valid file path: ");
-            String pathName = Console.ReadLine();
-
-            ConfigureFileLogger(pathName);
-
-            return fl;
+                
+            return x;   
         }
+        public void ConfigureFileLogger(string path){
+                 string privatePath = path;
+               }
         
-        public void ConfigureFileLogger(string pathname)
-        {
-            _pathname = pathname;
-        }
-
-
     }
-}
+
+        
+    }
+

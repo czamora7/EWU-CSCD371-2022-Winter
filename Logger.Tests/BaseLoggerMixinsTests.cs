@@ -40,7 +40,7 @@ namespace Logger.Tests
     {
         public List<(LogLevel LogLevel, string Message)> LoggedMessages { get; } = new List<(LogLevel, string)>();
 
-        public override void Log(LogLevel logLevel, string message)
+        public override void Log(string className, LogLevel logLevel, string message, string path)
         {
             LoggedMessages.Add((logLevel, message));
         }

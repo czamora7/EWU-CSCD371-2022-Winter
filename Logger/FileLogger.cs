@@ -1,33 +1,29 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
 namespace Logger
 {
-    public class FileLogger : BaseLogger
-    {
-        public string _PathName;
+    public class FileLogger : BaseLogger{
+        private DateTime dateTime;
 
-        public String PathName
+
+        public override void Log(string className, LogLevel logLevel, string message, string path)
         {
-            get => _PathName;
+            Console.WriteLine("Please enter the file path: ");
+            path = Console.ReadLine();
 
-            set
-            {
-                if (value is null) throw new ArgumentNullException(nameof(value));
-                _PathName = value;
-            }
-        }
+            dateTime = DateTime.Now;
+            Console.WriteLine(dateTime+ " "+ className+ " "+ logLevel+ " "+ message);
+            string info = (dateTime + " " + className + " " + logLevel + " " + message);
 
-        public override void Log(LogLevel logLevel, string message)
-        {
-            StreamWriter fs = new StreamWriter(PathName);
-
-            //append the message to the file
-            fs.WriteLine(message);
-            
-            //output the date, time, class name, log level, and message
-            Console.WriteLine($"{DateTime.Now} {ClassName} {nameof(logLevel)}:  {message}");
-
+            using StreamWriter sw = File.AppendText(path);
+            sw.WriteLine(info);
         }
     }
 }
+
+
+
+
