@@ -7,6 +7,9 @@ namespace Logger
     {
         readonly LogFactory log = new();
         public string status = "success";
+
+        public string? Path{get; private set;}
+
         public object? ClassName { get; set;}
         public string? CreateLogger(string className, LogLevel LogLevel, string message,FileLogger fileLogger)
         {
@@ -24,8 +27,8 @@ namespace Logger
             return x;   
         }
         public void ConfigureFileLogger(string path){
-                 string privatePath = path;
-               }
+            Path = path;       
+        }
         
     }
 
