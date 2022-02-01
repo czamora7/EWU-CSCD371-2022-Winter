@@ -22,7 +22,7 @@ public class Jester
         }
     }
 
-    public void TellJoke(Comedian comedian, JokeService jokeService)
+    public string TellJoke(Comedian comedian, JokeService jokeService)
     {
         //set the dependencies as the parameters
         Comedian = comedian;
@@ -43,6 +43,7 @@ public class Jester
 
         //if not display the joke and exit
         this.Comedian.DisplayJoke(joke);
+        return joke;
     }
 
 }
