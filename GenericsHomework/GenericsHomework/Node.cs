@@ -1,7 +1,8 @@
 ﻿namespace GenericsHomework;
-public class Node<T>
-{
 
+using System;
+public class Node<T> : IComparable<Node<T>>
+{
     public Node<T> _Next;
     public T? Data { get; private set; }
     public Node<T> Next { 
@@ -53,8 +54,22 @@ public class Node<T>
         }
     }
 
-    public bool Exists()
+    public bool Exists(T data, Node<T> root)
     {
+        Node<T> check = root;
+        while (check.Next != check && check.Next != root)
+        {
+            if (new Node<T>(data).CompareTo(check) == 0)
+            {
+                return true;
+            }
+        }
+
         return false;
+    }
+
+    public int CompareTo(Node<T>? other)
+    {
+        return this.CompareTo(other);
     }
 }
