@@ -21,9 +21,15 @@ public class Node<T> : IComparable<Node<T>>
         return Data?.ToString();
     }
 
-    public void Append(T data)
+    public void Append(T data, Node<T> root)
     {
-        this.Next = new Node<T>(data);
+        Node<T> check = root;
+        while(check.Next != check && check.Next != root)
+        {
+            throw new Exception("duplicate value");
+        }
+
+        check.Next = new Node<T>(data);
     }
 
     public void Clear()
