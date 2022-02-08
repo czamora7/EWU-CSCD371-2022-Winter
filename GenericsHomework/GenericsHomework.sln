@@ -5,6 +5,11 @@ VisualStudioVersion = 17.0.32014.148
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenericsHomework", "GenericsHomework\GenericsHomework.csproj", "{BBD93BBE-FA4A-4E24-9116-6993957F6AA8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenericsHomeworkTests", "GenericsHomeworkTests\GenericsHomeworkTests.csproj", "{7086FA3D-7920-4B49-914F-FA462CEEA921}"
+	ProjectSection(ProjectDependencies) = postProject
+		{BBD93BBE-FA4A-4E24-9116-6993957F6AA8} = {BBD93BBE-FA4A-4E24-9116-6993957F6AA8}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +20,10 @@ Global
 		{BBD93BBE-FA4A-4E24-9116-6993957F6AA8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BBD93BBE-FA4A-4E24-9116-6993957F6AA8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BBD93BBE-FA4A-4E24-9116-6993957F6AA8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7086FA3D-7920-4B49-914F-FA462CEEA921}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7086FA3D-7920-4B49-914F-FA462CEEA921}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7086FA3D-7920-4B49-914F-FA462CEEA921}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7086FA3D-7920-4B49-914F-FA462CEEA921}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
