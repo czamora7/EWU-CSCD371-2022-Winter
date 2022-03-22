@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Threading;
+using System.Text;
 
 namespace Assignment.Tests;
 
@@ -133,14 +134,18 @@ public class PingProcessTests
     }
 
     [TestMethod]
-#pragma warning disable CS1998 // Remove this
     async public Task RunLongRunningAsync_UsingTpl_Success()
     {
-        PingResult result = default;
-        // Test Sut.RunLongRunningAsync("localhost");
+        ProcessStartInfo sInf = new();
+        sInf.Arguments = "localhost";
+
+        StringBuilder? stringBuilder = null;
+        void updateStdOutput(string? line) =>
+                    (stringBuilder ??= new StringBuilder()).AppendLine(line);
+
+        PingResult result = await Sut.RunLongRunningAsync(sInf, updateStdOutput, default, Cts.Token);
         AssertValidPingOutput(result);
     }
-#pragma warning restore CS1998 // Remove this
 
     [TestMethod]
     public void StringBuilderAppendLine_InParallel_IsNotThreadSafe()

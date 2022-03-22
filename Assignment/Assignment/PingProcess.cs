@@ -25,7 +25,9 @@ public class PingProcess
         return new PingResult( process.ExitCode, stringBuilder?.ToString());
     }
 
+#pragma warning disable CA1822 //Methods that do not access instance data cannot be marked as static
     public Task<PingResult> RunTaskAsync(string hostNameOrAddress)
+
     {
         Task<PingResult> task = new( 
             () => new PingProcess().Run(hostNameOrAddress));
@@ -78,12 +80,24 @@ public class PingProcess
         return new PingResult(total, stringBuilder?.ToString());
     }
 
-    async public Task<PingResult> RunLongRunningAsync(
-        string hostNameOrAddress, CancellationToken cancellationToken = default)
+    public async Task<PingResult> RunLongRunningAsync(ProcessStartInfo startInfo, 
+        Action<string?>? progressOutput, Action<string?>? progressError, 
+        CancellationToken token)
     {
-        Task task = null!;
-        await task;
-        throw new NotImplementedException();
+        TaskFactory<PingResult> tFact = new(default, TaskCreationOptions.LongRunning, default, TaskScheduler.Current);
+
+        PingResult result = await tFact.StartNew(() =>
+            {
+                StartInfo.Arguments = startInfo.Arguments;
+                StringBuilder? stringBuilder = null;
+                
+                Process prc = RunProcessInternal(startInfo,progressOutput, progressError, token);
+                
+                return new PingResult(prc.ExitCode, stringBuilder?.ToString());
+            }
+        );
+
+        return result;
     }
 
     private Process RunProcessInternal(
@@ -193,4 +207,6 @@ public class PingProcess
 
         return startInfo;
     }
+
+#pragma warning restore CA1822 
 }
