@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace Assignment.Tests;
 
@@ -11,11 +12,13 @@ namespace Assignment.Tests;
 public class PingProcessTests
 {
     PingProcess Sut { get; set; } = new();
+    CancellationTokenSource Cts { get; set; } = new();
 
     [TestInitialize]
     public void TestInitialize()
     {
         Sut = new();
+        Cts = new();
     }
 
     [TestMethod]
@@ -69,7 +72,7 @@ public class PingProcessTests
     {
         // Do NOT use async/await in this test.
         // Test Sut.RunAsync("localhost");
-        PingResult result = Sut.RunAsync("localhost").Result;
+        PingResult result = Sut.RunAsync("localhost", Cts.Token).Result;
         AssertValidPingOutput(result);
     }
 
@@ -77,7 +80,8 @@ public class PingProcessTests
     async public Task RunAsync_UsingTpl_Success()
     {
         // DO use async/await in this test.
-        PingResult result = await Sut.RunAsync("localhost");
+
+        PingResult result = await Sut.RunAsync("localhost", Cts.Token);
 
         // Test Sut.RunAsync("localhost");
         AssertValidPingOutput(result);
@@ -86,16 +90,34 @@ public class PingProcessTests
 
     [TestMethod]
     [ExpectedException(typeof(AggregateException))]
-    public void RunAsync_UsingTplWithCancellation_CatchAggregateExceptionWrapping()
+    public async void RunAsync_UsingTplWithCancellation_CatchAggregateExceptionWrapping()
     {
-        
+        Cts.Cancel();
+
+        PingResult result = await Sut.RunAsync("localhost", Cts.Token);
     }
 
     [TestMethod]
     [ExpectedException(typeof(TaskCanceledException))]
-    public void RunAsync_UsingTplWithCancellation_CatchAggregateExceptionWrappingTaskCanceledException()
+    public async void RunAsync_UsingTplWithCancellation_CatchAggregateExceptionWrappingTaskCanceledException()
     {
         // Use exception.Flatten()
+        Cts.Cancel();
+
+        try 
+        {
+            PingResult result = await Sut.RunAsync("localhost", Cts.Token);
+        }
+        catch (AggregateException e)
+        {
+            foreach(var inner in e.Flatten().InnerExceptions)
+            {
+                if (inner is TaskCanceledException)
+                    throw inner;
+                else
+                    throw e;
+            }
+        }
     }
 
     [TestMethod]
@@ -104,7 +126,7 @@ public class PingProcessTests
         // Pseudo Code - don't trust it!!!
         string[] hostNames = new string[] { "localhost", "localhost", "localhost", "localhost" };
         int expectedLineCount = PingOutputLikeExpression.Split(Environment.NewLine).Length*hostNames.Length;
-        PingResult result = await Sut.RunAsync(hostNames);
+        PingResult result = await Sut.RunAsync(Cts.Token, hostNames);
         int? lineCount = result.StdOutput?.Split(Environment.NewLine).Length;
         Assert.AreEqual(expectedLineCount, lineCount);
     }

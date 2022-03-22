@@ -27,12 +27,13 @@ public class PingProcess
 
     public Task<PingResult> RunTaskAsync(string hostNameOrAddress)
     {
-        Task<PingResult> task = new Task<PingResult>( 
-            () => (new PingProcess()).Run(hostNameOrAddress));
+        Task<PingResult> task = new( 
+            () => new PingProcess().Run(hostNameOrAddress));
 
         task.Start();
+        Console.WriteLine("Fetching...");
 
-        while(!task.WaitAsync(new TimeSpan(0, 0, 4)).IsCompletedSuccessfully)
+        while(!task.Wait(400))
         {
             Console.WriteLine(".");
         }
@@ -42,30 +43,34 @@ public class PingProcess
 
     async public Task<PingResult> RunAsync(
         string hostNameOrAddress, CancellationToken cancellationToken = default)
-    {
-        Task<PingResult> task = new Task<PingResult>(
-            () => (new PingProcess().Run(hostNameOrAddress)));
-        
-        PingResult res = await task;
-        
+    { 
+        Console.WriteLine("Fetching...");
+
         if (cancellationToken.IsCancellationRequested)
         {
             throw new AggregateException(new TaskCanceledException());
         }
 
-        return res;
+        PingResult result = await Task.Run(() => (new PingProcess()).Run(hostNameOrAddress));
+
+        return result;
     }
 
-    async public Task<PingResult> RunAsync(params string[] hostNameOrAddresses)
+    async public Task<PingResult> RunAsync(CancellationToken cancellationToken, 
+        params string[] hostNameOrAddresses)
     {
-        StringBuilder? stringBuilder = null;
+        StringBuilder? stringBuilder = new();
         ParallelQuery<Task<int>>? all = hostNameOrAddresses.AsParallel().Select(async item =>
         {
-            Task<PingResult> task = null!;
-            // ...
+            if (cancellationToken.IsCancellationRequested)
+            {
+                throw new AggregateException(new TaskCanceledException());
+            }
+            
+            PingResult result = await Task.Run(() => (new PingProcess()).Run(item));
 
-            await task.WaitAsync(default(CancellationToken));
-            return task.Result.ExitCode;
+            stringBuilder.AppendLine(result.StdOutput);
+            return result.ExitCode;
         });
 
         await Task.WhenAll(all);
