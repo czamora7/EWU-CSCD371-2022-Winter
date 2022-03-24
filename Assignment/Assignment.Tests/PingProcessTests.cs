@@ -132,7 +132,7 @@ public class PingProcessTests
         int expectedLineCount = PingOutputLikeExpression.Split(Environment.NewLine).Length * 
             hostNames.Length * 2;
         
-        PingResult result = await Sut.RunAsync(Cts.Token, hostNames);
+        PingResult result = await Sut.RunAsync(hostNames, Cts.Token);
         result.StdOutput = RemoveEmptyLines(result.StdOutput!);
         int? lineCount = result.StdOutput?.Split(Environment.NewLine).Length;
 
