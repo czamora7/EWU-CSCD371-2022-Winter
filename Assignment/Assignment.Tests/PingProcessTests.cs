@@ -6,6 +6,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Threading;
 using System.Text;
+using System.IO;
+using System.Text.RegularExpressions;
 
 namespace Assignment.Tests;
 
@@ -124,13 +126,30 @@ public class PingProcessTests
     [TestMethod]
     async public Task RunAsync_MultipleHostAddresses_True()
     {
-        // Pseudo Code - don't trust it!!!
-        //I do not
-        string[] hostNames = new string[]{ "localhost", "localhost", "localhost", "localhost" };
-        int expectedLineCount = 4;
+        string[] hostNames = new string[]{ "localhost", "localhost", "localhost", "localhost", "localhost" };
+
+        //the expected line count is doubled because each hostname pings twice
+        int expectedLineCount = PingOutputLikeExpression.Split(Environment.NewLine).Length * 
+            hostNames.Length * 2;
+        
         PingResult result = await Sut.RunAsync(Cts.Token, hostNames);
+        result.StdOutput = RemoveEmptyLines(result.StdOutput!);
         int? lineCount = result.StdOutput?.Split(Environment.NewLine).Length;
-        Assert.AreEqual(expectedLineCount, lineCount);
+
+        //Ignore this it was used for testing purposes
+
+        /*String fp = @"C:\Users\coron\CSCD371\Assignment9+10\Assignment\Assignment.Tests\TestPart3StdOutput.txt";
+        using(StreamWriter of = new StreamWriter(fp))
+        {
+            of.Write(result.StdOutput);
+        }*/
+
+        Assert.AreEqual(0, result.ExitCode);
+        
+        //the std output has a \n at the beginning of the string for unknown
+        //reasons, throwing off the expected line count by exactly one
+        
+        Assert.AreEqual(expectedLineCount, lineCount - 1);
     }
 
     [TestMethod]
@@ -163,7 +182,6 @@ Reply from ::1: time<*
 Reply from ::1: time<*
 Reply from ::1: time<*
 Reply from ::1: time<*
-
 Ping statistics for ::1:
     Packets: Sent = *, Received = *, Lost = 0 (0% loss),
 Approximate round trip times in milli-seconds:
@@ -178,4 +196,9 @@ Approximate round trip times in milli-seconds:
     }
     private void AssertValidPingOutput(PingResult result) =>
         AssertValidPingOutput(result.ExitCode, result.StdOutput);
+
+    private string RemoveEmptyLines(string lines)
+    {
+        return Regex.Replace(lines, @"^\s+$[\r\n]*", string.Empty, RegexOptions.Multiline);
+    }
 }

@@ -69,7 +69,7 @@ public class PingProcess
                 throw new AggregateException(new TaskCanceledException());
             }
             
-            PingResult result = await Task.Run(() => (new PingProcess()).Run(item));
+            PingResult result = await Task.Run(() => new PingProcess().Run(item));
 
             stringBuilder.AppendLine(result.StdOutput);
             return result.ExitCode;
