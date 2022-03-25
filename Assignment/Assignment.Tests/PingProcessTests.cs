@@ -93,23 +93,24 @@ public class PingProcessTests
 
     [TestMethod]
     [ExpectedException(typeof(AggregateException))]
-    public async void RunAsync_UsingTplWithCancellation_CatchAggregateExceptionWrapping()
+    public void RunAsync_UsingTplWithCancellation_CatchAggregateExceptionWrapping()
     {
         Cts.Cancel();
-
-        await Sut.RunAsync("localhost", Cts.Token);
+        Task<PingResult> task = Sut.RunAsync("localhost", Cts.Token);
+        task.Wait(100);
     }
 
     [TestMethod]
     [ExpectedException(typeof(TaskCanceledException))]
-    public async void RunAsync_UsingTplWithCancellation_CatchAggregateExceptionWrappingTaskCanceledException()
+    public void RunAsync_UsingTplWithCancellation_CatchAggregateExceptionWrappingTaskCanceledException()
     {
         // Use exception.Flatten()
         Cts.Cancel();
 
         try 
         {
-            PingResult result = await Sut.RunAsync("localhost", Cts.Token);
+            Task<PingResult> task = Sut.RunAsync("localhost", Cts.Token);
+            task.Wait(100);
         }
         catch (AggregateException e)
         {
@@ -155,14 +156,17 @@ public class PingProcessTests
     [TestMethod]
     async public Task RunLongRunningAsync_UsingTpl_Success()
     {
-        ProcessStartInfo sInf = new();
-        sInf.Arguments = "localhost";
+        ProcessStartInfo prcStart = new("ping", "localhost");
 
+        //review this part if invalid StdOutput occurs
         StringBuilder? stringBuilder = null;
         void updateStdOutput(string? line) =>
                     (stringBuilder ??= new StringBuilder()).AppendLine(line);
 
-        PingResult result = await Sut.RunLongRunningAsync(sInf, updateStdOutput, default, Cts.Token);
+        PingResult result = await Sut.RunLongRunningAsync(prcStart, updateStdOutput, default, Cts.Token);
+
+        //Assert.AreEqual(0, result.ExitCode);
+        //Assert.IsFalse(String.IsNullOrWhiteSpace(result.StdOutput));
         AssertValidPingOutput(result);
     }
 

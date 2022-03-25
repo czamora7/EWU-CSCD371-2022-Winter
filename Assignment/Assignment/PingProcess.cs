@@ -33,7 +33,6 @@ public class PingProcess
             () => new PingProcess().Run(hostNameOrAddress));
 
         task.Start();
-        Console.WriteLine("Fetching...");
 
         while(!task.Wait(400))
         {
@@ -45,17 +44,13 @@ public class PingProcess
 
     async public Task<PingResult> RunAsync(
         string hostNameOrAddress, CancellationToken cancellationToken = default)
-    { 
-        Console.WriteLine("Fetching...");
+    {
+        cancellationToken.ThrowIfCancellationRequested();
 
-        if (cancellationToken.IsCancellationRequested)
-        {
-            throw new AggregateException(new TaskCanceledException());
-        }
-
-        PingResult result = await Task.Run(() => (new PingProcess()).Run(hostNameOrAddress));
-
-        return result;
+        return await Task.Run(() =>
+            {
+                return new PingProcess().Run(hostNameOrAddress);
+            }, cancellationToken);
     }
 
     async public Task<PingResult> RunAsync(IEnumerable<String> hostNameOrAddresses, 
@@ -89,12 +84,12 @@ public class PingProcess
         PingResult result = await tFact.StartNew(() =>
             {
                 StartInfo.Arguments = startInfo.Arguments;
-                StringBuilder? stringBuilder = null;
+                StringBuilder? stringBuilder = new();
                 
                 Process prc = RunProcessInternal(startInfo,progressOutput, progressError, token);
                 
                 return new PingResult(prc.ExitCode, stringBuilder?.ToString());
-            }
+            }, token
         );
 
         return result;
