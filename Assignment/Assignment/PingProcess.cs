@@ -85,8 +85,10 @@ public class PingProcess
             {
                 StartInfo.Arguments = startInfo.Arguments;
                 StringBuilder? stringBuilder = new();
-                
-                Process prc = RunProcessInternal(startInfo,progressOutput, progressError, token);
+                void updateStdOutput(string? line) =>
+                            (stringBuilder ??= new StringBuilder()).AppendLine(line);
+
+                Process prc = RunProcessInternal(StartInfo, updateStdOutput, progressError, token);
                 
                 return new PingResult(prc.ExitCode, stringBuilder?.ToString());
             }, token

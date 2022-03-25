@@ -127,7 +127,7 @@ public class PingProcessTests
     [TestMethod]
     async public Task RunAsync_MultipleHostAddresses_True()
     {
-        string[] hostNames = new string[]{ "localhost", "localhost", "localhost", "localhost", "localhost" };
+        string[] hostNames = new string[]{"localhost", "localhost", "localhost", "localhost" };
 
         //the expected line count is doubled because each hostname pings twice
         int expectedLineCount = PingOutputLikeExpression.Split(Environment.NewLine).Length * 
@@ -158,12 +158,8 @@ public class PingProcessTests
     {
         ProcessStartInfo prcStart = new("ping", "localhost");
 
-        //review this part if invalid StdOutput occurs
-        StringBuilder? stringBuilder = null;
-        void updateStdOutput(string? line) =>
-                    (stringBuilder ??= new StringBuilder()).AppendLine(line);
-
-        PingResult result = await Sut.RunLongRunningAsync(prcStart, updateStdOutput, default, Cts.Token);
+        PingResult result = await Sut.RunLongRunningAsync(prcStart, 
+            default, default, Cts.Token);
 
         //Assert.AreEqual(0, result.ExitCode);
         //Assert.IsFalse(String.IsNullOrWhiteSpace(result.StdOutput));
