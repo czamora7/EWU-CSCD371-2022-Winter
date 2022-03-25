@@ -97,6 +97,23 @@ public class PingProcess
         return result;
     }
 
+    public Task<PingResult> RunAsync(String hostNameOrAddress, 
+        IProgress<int?> progess) //unsure whether 'progess' was a typo or not
+    {
+        Task<PingResult> task = new(() => new PingProcess().Run(hostNameOrAddress));
+
+        task.Start();
+        while(task.Wait(100))
+        {
+            if(progess != null)
+            {
+                progess.Report(task.Result.StdOutput?.Split(Environment.NewLine).Length);
+            }
+        }
+
+        return task;
+    }
+
     private Process RunProcessInternal(
         ProcessStartInfo startInfo,
         Action<string?>? progressOutput,

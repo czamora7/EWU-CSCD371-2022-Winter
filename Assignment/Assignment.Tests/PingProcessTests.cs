@@ -167,6 +167,17 @@ public class PingProcessTests
     }
 
     [TestMethod]
+    async public Task RunAsyncWithProgress_Success()
+    {
+        Progress<int?> progess = new( (int? stdOutputLines ) =>
+            {
+                Console.WriteLine("{0} lines loaded.", stdOutputLines);
+            });
+        PingResult result = await Sut.RunAsync("localhost", progess);
+        AssertValidPingOutput(result);
+    }
+
+    [TestMethod]
     public void StringBuilderAppendLine_InParallel_IsNotThreadSafe()
     {
         IEnumerable<int> numbers = Enumerable.Range(0, short.MaxValue);
